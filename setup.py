@@ -2,13 +2,13 @@ from setuptools import setup
 
 setup(
     name='nicogest',
-    version='1.1.0',
+    version='1.1.1',
     description='Niconico Douga digest maker',
     author='lon9',
     url='https://github.com/lon9/nicogest',
     packages=['nicogest'],
     install_requires=[
-        'beautifulsoup4==4.7.1'
+        'beautifulsoup4==4.7.1',
         'certifi==2019.6.16',
         'chardet==3.0.4',
         'decorator==4.4.0',
