@@ -1,52 +1,38 @@
 import os
 import argparse
-from urllib import request
-from bs4 import BeautifulSoup
-import youtube_dl
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+import nndownload
+import xml.etree.ElementTree as ET
 
-NICOCO_URL = 'http://nicoco.net/'
 VIDEO_URL = 'https://www.nicovideo.jp/watch/'
 
 class Nicogest():
-    def __init__(self, output_dir='./', threshold_multiplier=1.2):
+    def __init__(self, output_dir='./', threshold_multiplier=1.2, username='', password=''):
         self.output_dir = output_dir
         self.threshold_multiplier = threshold_multiplier
-
-    def _get_seconds(self, time):
-        splitted = time.split('.')
-        return 60*int(splitted[0])+int(splitted[1])
+        self.username = username
+        self.password = password
 
     def _get_comments(self, video_id):
-        html = request.urlopen(NICOCO_URL+video_id)
-        soup = BeautifulSoup(html, 'html.parser')
-        rows = soup.find('table').find_all('tr')
-
         comments = []
-        for row in rows[1:]:
-            tds = row.find_all('td')
-            comment_id = tds[0].text
-            time = tds[1].text
-            user_id = tds[2].text
-            content = tds[3].text
-            created_at = tds[5].text
+        with open(video_id+'.xml', 'r') as f:
+            data = f.read()
+        root = ET.fromstring(data)
+        for chat in root.iter('chat'):
             comments.append({
-                'comment_id': comment_id,
-                'time': time,
-                'seconds': self._get_seconds(time),
-                'user_id': user_id,
-                'content': content,
-                'created_at': created_at
+                'comment_id': int(chat.attrib['no']),
+                'seconds': int(chat.attrib['vpos'])//100,
+                'user_id': chat.attrib['user_id'] if 'user_id' in chat.attrib else '',
+                'content': chat.text
             })
         return comments
 
     def _download_video(self, video_id):
-        opts = {
-            'outtmpl': '%(id)s.%(ext)s',
-            'retries': 10
-        }
-        with youtube_dl.YoutubeDL(opts) as ydl:
-            ydl.download([VIDEO_URL+video_id])
+        out_path = '{id}.{ext}'
+        if self.username  and self.password :
+            nndownload.execute('-u', self.username, '-p', self.password, '-o', out_path, '-c', VIDEO_URL+video_id)
+        else:
+            nndownload.execute('-g', '-o', out_path, '-c', VIDEO_URL+video_id)
 
     def do(self, video_id):
 
@@ -119,3 +105,4 @@ class Nicogest():
 
         # remove video
         os.remove(video_name)
+        os.remove(video_id+'.xml')
