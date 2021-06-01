@@ -23,7 +23,7 @@ setup(
         'requests==2.22.0',
         'soupsieve==1.9.2',
         'tqdm==4.32.2',
-        'urllib3==1.25.3',
+        'urllib3==1.26.5',
         'websockets==8.0'
     ]
 )
