@@ -18,7 +18,7 @@ setup(
         'moviepy==1.0.0',
         'nndownload==1.1',
         'numpy==1.16.4',
-        'Pillow==7.1.0',
+        'Pillow==8.2.0',
         'proglog==0.1.9',
         'requests==2.22.0',
         'soupsieve==1.9.2',
