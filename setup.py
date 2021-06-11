@@ -24,6 +24,6 @@ setup(
         'soupsieve==1.9.2',
         'tqdm==4.32.2',
         'urllib3==1.25.3',
-        'websockets==8.0'
+        'websockets==9.1'
     ]
 )
